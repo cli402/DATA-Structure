@@ -21,8 +21,11 @@ public class PixImage {
    *  Define any variables associated with a PixImage object here.  These
    *  variables MUST be private.
    */
-
-
+	private int widith;
+	private int height;
+	private short[][] Pixmatr_Blue;
+	private short[][] Pixmatr_Red;
+	private short[][] Pixmatr_Green;
 
 
   /**
@@ -33,7 +36,11 @@ public class PixImage {
    * @param height the height of the image.
    */
   public PixImage(int width, int height) {
-    // Your solution here.
+    this.widith=width;
+    this.height=height;
+    this.Pixmatr_Blue=new short[width][height];
+    this.Pixmatr_Green=new short[width][height];
+    this.Pixmatr_Red=new short[width][height];
   }
 
   /**
@@ -43,7 +50,7 @@ public class PixImage {
    */
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return this.widith;
   }
 
   /**
@@ -53,7 +60,7 @@ public class PixImage {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return this.height;
   }
 
   /**
@@ -65,7 +72,7 @@ public class PixImage {
    */
   public short getRed(int x, int y) {
     // Replace the following line with your solution.
-    return 0;
+    return this.Pixmatr_Red[x][y];
   }
 
   /**
@@ -77,7 +84,7 @@ public class PixImage {
    */
   public short getGreen(int x, int y) {
     // Replace the following line with your solution.
-    return 0;
+    return this.Pixmatr_Green[x][y];
   }
 
   /**
@@ -89,7 +96,7 @@ public class PixImage {
    */
   public short getBlue(int x, int y) {
     // Replace the following line with your solution.
-    return 0;
+    return this.Pixmatr_Blue[x][y];
   }
 
   /**
@@ -106,8 +113,22 @@ public class PixImage {
    * @param blue the new blue intensity for the pixel at coordinate (x, y).
    */
   public void setPixel(int x, int y, short red, short green, short blue) {
-    // Your solution here.
+   if(red<0||red>255|| green<0 || green>255||blue<0||blue>255){
+	   return;
+   }
+   this.Pixmatr_Blue[x][y]=blue;
+   this.Pixmatr_Red[x][y]=red;
+   this.Pixmatr_Green[x][y]=green;
   }
+  
+  public void setPixel(int x, int y, short red, short green, short blue,PixImage d) {
+	   if(red<0||red>255|| green<0 || green>255||blue<0||blue>255){
+		   return;
+	   }
+	   d.Pixmatr_Blue[x][y]=blue;
+	   d.Pixmatr_Red[x][y]=red;
+	   d.Pixmatr_Green[x][y]=green;
+	  }
 
   /**
    * toString() returns a String representation of this PixImage.
@@ -120,7 +141,25 @@ public class PixImage {
    */
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+   String Blue=new String();
+   String Red = new String();
+   String Green = new String();
+   Blue="[ \n";
+   Red = "[\n";
+   Green="[\n";
+   for (int i =0;i<this.widith;i++){
+	   for (int j =0;j<this.height;j++){
+		   Green+=Short.toString((this.Pixmatr_Green[i][j]))+" , ";
+		   Blue+=Short.toString((this.Pixmatr_Blue[i][j]))+" , ";
+		   Red+=Short.toString((this.Pixmatr_Red[i][j]))+" , ";
+	   }
+	   Green+="\n";
+	   Red+="\n";
+	   Blue+="\n";
+   }
+   String Pix= "The Red Matrix is: \n"+Red+"The Green Matrix is:\n"+Green+"The Blue Matrix is:\n"+Blue;
+	  
+	  return Pix;
   }
 
   /**
@@ -154,9 +193,146 @@ public class PixImage {
    */
   public PixImage boxBlur(int numIterations) {
     // Replace the following line with your solution.
-    return this;
+	  int num=numIterations;
+	  if (numIterations < 1){
+    return this;}
+	  else {
+		  PixImage Bluree= new PixImage(this.widith,this.height);
+		  PixImage Bluree1=new PixImage(this.widith,this.height);
+		  for (int i = 0;i<this.widith;i++){
+			  for (int j=0;j<this.height;j++){
+				  getmean(i,j,this,Bluree);
+				  getmean(i,j,this,Bluree1);
+			  }
+			  }
+			 num--;
+		  while(num>0){
+			  for (int i = 0;i<this.widith;i++){
+				  for (int j=0;j<this.height;j++){
+					  getmean(i,j,Bluree1,Bluree);
+				  }
+			  }
+			  for (int i = 0;i<this.widith;i++){
+				  for (int j=0;j<this.height;j++){
+					  setPixel(i, j, Bluree.Pixmatr_Red[i][j], Bluree.Pixmatr_Green[i][j], Bluree.Pixmatr_Blue[i][j], Bluree1);
+				  }
+			  }
+			  num--;
+		  }
+	  return Bluree;
+	  }
   }
 
+  public void getmean(int x,int y, PixImage d,PixImage xi){
+	  //get the sum of the one that is not on the boundary
+	  if (x>0 && x <d.widith-1 && y > 0 && y < d.height-1){
+		  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x-1][y-1]+d.Pixmatr_Blue[x][y-1]+d.Pixmatr_Blue[x+1][y-1]+
+				  						d.Pixmatr_Blue[x-1][y]+d.Pixmatr_Blue[x][y]+d.Pixmatr_Blue[x+1][y]+
+				  						d.Pixmatr_Blue[x-1][y+1]+d.Pixmatr_Blue[x][y+1]+d.Pixmatr_Blue[x+1][y+1])/9);
+		  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x-1][y-1]+d.Pixmatr_Green[x][y-1]+d.Pixmatr_Green[x+1][y-1]+
+	  									d.Pixmatr_Green[x-1][y]+d.Pixmatr_Green[x][y]+d.Pixmatr_Green[x+1][y]+
+	  									d.Pixmatr_Green[x-1][y+1]+d.Pixmatr_Green[x][y+1]+d.Pixmatr_Green[x+1][y+1])/9);
+		  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x-1][y-1]+d.Pixmatr_Red[x][y-1]+d.Pixmatr_Red[x+1][y-1]+
+	  									d.Pixmatr_Red[x-1][y]+d.Pixmatr_Red[x][y]+d.Pixmatr_Red[x+1][y]+
+	  									d.Pixmatr_Red[x-1][y+1]+d.Pixmatr_Red[x][y+1]+d.Pixmatr_Red[x+1][y+1])/9);
+	  }
+	  //x on the boundary
+	  else if ((x==0 ||x == d.widith-1 )&& y> 0 && y < d.height -1 ){
+		  if(x ==0){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x][y-1]+d.Pixmatr_Blue[x+1][y-1]+
+		  									d.Pixmatr_Blue[x][y]+d.Pixmatr_Blue[x+1][y]+
+		  									d.Pixmatr_Blue[x][y+1]+d.Pixmatr_Blue[x+1][y+1])/6);
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x][y-1]+d.Pixmatr_Green[x+1][y-1]+
+											d.Pixmatr_Green[x][y]+d.Pixmatr_Green[x+1][y]+
+											d.Pixmatr_Green[x][y+1]+d.Pixmatr_Green[x+1][y+1])/6);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x][y-1]+d.Pixmatr_Red[x+1][y-1]+
+											d.Pixmatr_Red[x][y]+d.Pixmatr_Red[x+1][y]+
+											d.Pixmatr_Red[x][y+1]+d.Pixmatr_Red[x+1][y+1])/6);
+		  }
+		  if(x== d.widith-1){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x][y-1]+d.Pixmatr_Blue[x-1][y-1]+
+					  						d.Pixmatr_Blue[x][y]+d.Pixmatr_Blue[x-1][y]+
+					  						d.Pixmatr_Blue[x][y+1]+d.Pixmatr_Blue[x-1][y+1])/6);
+			  
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x][y-1]+d.Pixmatr_Green[x-1][y-1]+
+					  						d.Pixmatr_Green[x][y]+d.Pixmatr_Green[x-1][y]+
+					  						d.Pixmatr_Green[x][y+1]+d.Pixmatr_Green[x-1][y+1])/6);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x][y-1]+d.Pixmatr_Red[x-1][y-1]+
+					  						d.Pixmatr_Red[x][y]+d.Pixmatr_Red[x-1][y]+
+					  						d.Pixmatr_Red[x][y+1]+d.Pixmatr_Red[x-1][y+1])/6);
+		  }
+		  
+	  }
+	  //y on the boundary
+	  else if ((y==0 ||y == d.widith-1)  && x> 0 && x < d.widith -1 ){
+		  if(y ==0){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x-1][y]+d.Pixmatr_Blue[x-1][y+1]+
+		  									d.Pixmatr_Blue[x][y]+d.Pixmatr_Blue[x][y+1]+
+		  									d.Pixmatr_Blue[x+1][y]+d.Pixmatr_Blue[x+1][y+1])/6);
+			  
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x-1][y]+d.Pixmatr_Green[x-1][y+1]+
+					  						d.Pixmatr_Green[x][y]+d.Pixmatr_Green[x][y+1]+
+					  						d.Pixmatr_Green[x+1][y]+d.Pixmatr_Green[x+1][y+1])/6);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x-1][y]+d.Pixmatr_Red[x-1][y+1]+
+											d.Pixmatr_Red[x][y]+d.Pixmatr_Red[x][y+1]+
+											d.Pixmatr_Red[x+1][y]+d.Pixmatr_Red[x+1][y+1])/6);
+		  }
+		  if(y== d.height-1){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x-1][y-1]+d.Pixmatr_Blue[x-1][y]+
+					  						d.Pixmatr_Blue[x][y-1]+d.Pixmatr_Blue[x][y]+
+					  						d.Pixmatr_Blue[x+1][y-1]+d.Pixmatr_Blue[x+1][y])/6);
+			  
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x-1][y-1]+d.Pixmatr_Green[x-1][y]+
+					  						d.Pixmatr_Green[x][y-1]+d.Pixmatr_Green[x][y]+
+					  						d.Pixmatr_Green[x+1][y-1]+d.Pixmatr_Green[x+1][y])/6);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x-1][y-1]+d.Pixmatr_Red[x-1][y]+
+					  						d.Pixmatr_Red[x][y-1]+d.Pixmatr_Red[x][y]+
+					  						d.Pixmatr_Red[x+1][y-1]+d.Pixmatr_Red[x+1][y])/6);
+		  }		  
+	  }
+	  //The Conner Case 
+	  else{
+		  if (x==0 && y == 0){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x][y]+d.Pixmatr_Blue[x+1][y]+
+					  						d.Pixmatr_Blue[x][y+1]+d.Pixmatr_Blue[x+1][y+1])/4);
+				
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x][y]+d.Pixmatr_Green[x+1][y]+
+											d.Pixmatr_Green[x][y+1]+d.Pixmatr_Green[x+1][y+1])/4);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x][y]+d.Pixmatr_Red[x+1][y]+
+					  						d.Pixmatr_Red[x][y+1]+d.Pixmatr_Red[x+1][y+1])/4);
+						  }
+		  else if (x==0 && y == d.height-1){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x][y-1]+d.Pixmatr_Blue[x][y]+
+					  						d.Pixmatr_Blue[x+1][y-1]+d.Pixmatr_Blue[x+1][y])/4);
+
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x][y-1]+d.Pixmatr_Green[x][y]+
+											d.Pixmatr_Green[x+1][y-1]+d.Pixmatr_Green[x+1][y])/4);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x][y-1]+d.Pixmatr_Red[x][y]+
+											d.Pixmatr_Red[x+1][y-1]+d.Pixmatr_Red[x+1][y])/4);				
+		  }
+		  else if (x==d.widith-1 && y ==0){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x-1][y]+d.Pixmatr_Blue[x][y]+
+											d.Pixmatr_Blue[x-1][y+1]+d.Pixmatr_Blue[x][y+1])/4);
+
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x-1][y]+d.Pixmatr_Green[x][y]+
+											d.Pixmatr_Green[x-1][y+1]+d.Pixmatr_Green[x][y+1])/4);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x-1][y]+d.Pixmatr_Red[x][y]+
+											d.Pixmatr_Red[x-1][y+1]+d.Pixmatr_Red[x][y+1])/4);
+		  }
+		  else if (x==d.widith -1 && y == d.height-1){
+			  xi.Pixmatr_Blue[x][y]=(short)((d.Pixmatr_Blue[x-1][y-1]+d.Pixmatr_Blue[x][y-1]+
+											d.Pixmatr_Blue[x-1][y]+d.Pixmatr_Blue[x][y])/4);
+
+			  xi.Pixmatr_Green[x][y]=(short)((d.Pixmatr_Green[x-1][y-1]+d.Pixmatr_Green[x][y-1]+
+											d.Pixmatr_Green[x-1][y]+d.Pixmatr_Green[x][y])/4);
+			  xi.Pixmatr_Red[x][y]=(short)((d.Pixmatr_Red[x-1][y-1]+d.Pixmatr_Red[x][y-1]+
+											d.Pixmatr_Red[x-1][y]+d.Pixmatr_Red[x][y])/4);
+		  }
+	  }
+	  
+  }
+  
+  
   /**
    * mag2gray() maps an energy (squared vector magnitude) in the range
    * 0...24,969,600 to a grayscale intensity in the range 0...255.  The map
