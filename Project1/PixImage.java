@@ -26,7 +26,7 @@ public class PixImage {
 	private short[][] Pixmatr_Blue;
 	private short[][] Pixmatr_Red;
 	private short[][] Pixmatr_Green;
-
+	private int[][] energy;
 
   /**
    * PixImage() constructs an empty PixImage with a specified width and height.
@@ -41,6 +41,7 @@ public class PixImage {
     this.Pixmatr_Blue=new short[width][height];
     this.Pixmatr_Green=new short[width][height];
     this.Pixmatr_Red=new short[width][height];
+    this.energy=new int[width][height];
   }
 
   /**
@@ -375,11 +376,96 @@ public class PixImage {
    */
   public PixImage sobelEdges() {
     // Replace the following line with your solution.
+	  for (int i=0;i<this.widith;i++){
+		  for (int j=0;j<this.height;j++){
+			  pixelprocess(i,j,this);
+		  }
+	  }
+	  for (int i=0;i<this.widith;i++){
+		  for (int j=0;j<this.height;j++){
+			  setPixel(i, j,mag2gray((long)this.energy[i][j]), mag2gray((long)this.energy[i][j]), mag2gray((long)this.energy[i][j]));
+		  }
+	  }
     return this;
     // Don't forget to use the method mag2gray() above to convert energies to
     // pixel intensities.
   }
 
+  public PixImage pixelprocess(int x ,int y ,PixImage d){
+	 int gx_Red=0;
+	 int gy_Red=0;
+	 int gx_Green=0;
+	 int gy_Green=0;
+	 int gx_Blue=0;
+	 int gy_Blue=0;
+	 int energy =0;
+	 //for the upper part
+	 if(y>0){
+		 gy_Blue+=2*(int)d.Pixmatr_Blue[x][y-1];
+		 gy_Green+=2*(int)d.Pixmatr_Green[x][y-1];
+		 gy_Red+=2*(int)d.Pixmatr_Red[x][y-1];
+
+	  if(x>0){
+		  gx_Blue+=(int)d.Pixmatr_Blue[x-1][y-1];	 
+		  gy_Blue+=(int)d.Pixmatr_Blue[x-1][y-1];
+		  gx_Red+=(int)d.Pixmatr_Red[x-1][y-1];	 
+		  gy_Red+=(int)d.Pixmatr_Red[x-1][y-1];
+		  gx_Green+=(int)d.Pixmatr_Green[x-1][y-1];	 
+		  gy_Green+=(int)d.Pixmatr_Green[x-1][y-1];
+	  }
+	  if(x<d.widith-1){
+		  gx_Blue+=-1*(int)d.Pixmatr_Blue[x+1][y-1];
+		  gy_Blue+=(int)d.Pixmatr_Blue[x+1][y-1];	 
+		  gx_Green+=-1*(int)d.Pixmatr_Green[x+1][y-1];
+		  gy_Green+=(int)d.Pixmatr_Green[x+1][y-1];	 
+		  gx_Red+=-1*(int)d.Pixmatr_Red[x+1][y-1];
+		  gy_Red+=(int)d.Pixmatr_Red[x+1][y-1];	 
+		  }
+	 }
+	  //for the middle part
+	  if(x>0){
+		  gx_Blue+=2*(int)d.Pixmatr_Blue[x-1][y];
+		  gx_Green+=2*(int)d.Pixmatr_Green[x-1][y];
+		  gx_Red+=2*(int)d.Pixmatr_Red[x-1][y];
+		  
+	  }
+	  if(x<d.widith-1){
+		  gx_Blue+=-2*(int)d.Pixmatr_Blue[x+1][y];
+		  gx_Green+=-2*(int)d.Pixmatr_Green[x+1][y];
+		  gx_Red+=-2*(int)d.Pixmatr_Red[x+1][y];
+		  
+	  }
+	 
+	  //for the lower part
+	  if(y<d.height -1){
+		  gy_Blue+= -2*(int)d.Pixmatr_Blue[x][y+1];
+		  gy_Green+= -2*(int)d.Pixmatr_Green[x][y+1];
+		  gy_Red+= -2*(int)d.Pixmatr_Red[x][y+1];
+
+		  
+		  if(x>0){
+			  gx_Blue+=(int)d.Pixmatr_Blue[x-1][y+1];
+			  gy_Blue+=-1*(int)d.Pixmatr_Blue[x-1][y+1];
+			  gx_Green+=(int)d.Pixmatr_Green[x-1][y+1];
+			  gy_Green+=-1*(int)d.Pixmatr_Green[x-1][y+1];
+			  gx_Red+=(int)d.Pixmatr_Red[x-1][y+1];
+			  gy_Red+=-1*(int)d.Pixmatr_Red[x-1][y+1];
+		  }
+		  if(x<d.widith-1){
+			  gx_Blue+=-1*(int)d.Pixmatr_Blue[x+1][y+1];
+			  gy_Blue+=-1*(int)d.Pixmatr_Blue[x+1][y+1];
+			  gx_Green+=-1*(int)d.Pixmatr_Green[x+1][y+1];
+			  gy_Green+=-1*(int)d.Pixmatr_Green[x+1][y+1];
+			  gx_Red+=-1*(int)d.Pixmatr_Red[x+1][y+1];
+			  gy_Red+=-1*(int)d.Pixmatr_Red[x+1][y+1];
+		  }  
+	  }
+	  energy+=Math.pow(gx_Blue,2)+Math.pow(gx_Green, 2)+Math.pow(gx_Red,2)+Math.pow(gy_Blue,2)+Math.pow(gy_Green,2)+Math.pow(gy_Red,2);
+	  d.energy[x][y]=energy;
+	  return d;
+  }
+  
+  
 
   /**
    * TEST CODE:  YOU DO NOT NEED TO FILL IN ANY METHODS BELOW THIS POINT.
