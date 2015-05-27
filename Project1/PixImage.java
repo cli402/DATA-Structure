@@ -399,73 +399,35 @@ public class PixImage {
 	 int gx_Blue=0;
 	 int gy_Blue=0;
 	 int energy =0;
-	 //for the upper part
-	 if(y>0){
-		 gy_Blue+=2*(int)d.Pixmatr_Blue[x][y-1];
-		 gy_Green+=2*(int)d.Pixmatr_Green[x][y-1];
-		 gy_Red+=2*(int)d.Pixmatr_Red[x][y-1];
-
-	  if(x>0){
-		  gx_Blue+=(int)d.Pixmatr_Blue[x-1][y-1];	 
-		  gy_Blue+=(int)d.Pixmatr_Blue[x-1][y-1];
-		  gx_Red+=(int)d.Pixmatr_Red[x-1][y-1];	 
-		  gy_Red+=(int)d.Pixmatr_Red[x-1][y-1];
-		  gx_Green+=(int)d.Pixmatr_Green[x-1][y-1];	 
-		  gy_Green+=(int)d.Pixmatr_Green[x-1][y-1];
-	  }
-	  if(x<d.widith-1){
-		  gx_Blue+=-1*(int)d.Pixmatr_Blue[x+1][y-1];
-		  gy_Blue+=(int)d.Pixmatr_Blue[x+1][y-1];	 
-		  gx_Green+=-1*(int)d.Pixmatr_Green[x+1][y-1];
-		  gy_Green+=(int)d.Pixmatr_Green[x+1][y-1];	 
-		  gx_Red+=-1*(int)d.Pixmatr_Red[x+1][y-1];
-		  gy_Red+=(int)d.Pixmatr_Red[x+1][y-1];	 
-		  }
-	 }
-	  //for the middle part
-	  if(x>0){
-		  gx_Blue+=2*(int)d.Pixmatr_Blue[x-1][y];
-		  gx_Green+=2*(int)d.Pixmatr_Green[x-1][y];
-		  gx_Red+=2*(int)d.Pixmatr_Red[x-1][y];
-		  
-	  }
-	  if(x<d.widith-1){
-		  gx_Blue+=-2*(int)d.Pixmatr_Blue[x+1][y];
-		  gx_Green+=-2*(int)d.Pixmatr_Green[x+1][y];
-		  gx_Red+=-2*(int)d.Pixmatr_Red[x+1][y];
-		  
-	  }
-	 
-	  //for the lower part
-	  if(y<d.height -1){
-		  gy_Blue+= -2*(int)d.Pixmatr_Blue[x][y+1];
-		  gy_Green+= -2*(int)d.Pixmatr_Green[x][y+1];
-		  gy_Red+= -2*(int)d.Pixmatr_Red[x][y+1];
-
-		  
-		  if(x>0){
-			  gx_Blue+=(int)d.Pixmatr_Blue[x-1][y+1];
-			  gy_Blue+=-1*(int)d.Pixmatr_Blue[x-1][y+1];
-			  gx_Green+=(int)d.Pixmatr_Green[x-1][y+1];
-			  gy_Green+=-1*(int)d.Pixmatr_Green[x-1][y+1];
-			  gx_Red+=(int)d.Pixmatr_Red[x-1][y+1];
-			  gy_Red+=-1*(int)d.Pixmatr_Red[x-1][y+1];
-		  }
-		  if(x<d.widith-1){
-			  gx_Blue+=-1*(int)d.Pixmatr_Blue[x+1][y+1];
-			  gy_Blue+=-1*(int)d.Pixmatr_Blue[x+1][y+1];
-			  gx_Green+=-1*(int)d.Pixmatr_Green[x+1][y+1];
-			  gy_Green+=-1*(int)d.Pixmatr_Green[x+1][y+1];
-			  gx_Red+=-1*(int)d.Pixmatr_Red[x+1][y+1];
-			  gy_Red+=-1*(int)d.Pixmatr_Red[x+1][y+1];
-		  }  
-	  }
+	 int[][] matri_x={{1,0,-1},{2,0,-2},{1,0,-1}};
+	 int[][] matri_y={{1,2,1},{0,0,0},{-1,-2,-1}};
+	for (int i=-1;i<2;i++){ 
+		for (int j=-1;j<2;j++){
+		gx_Red+=(int)matri_x[i+1][j+1]*(int)this.Pixmatr_Red[positions(x+i,this.widith)][positions(y+j,this.height)];	
+		gy_Red+=(int)matri_y[i+1][j+1]*(int)this.Pixmatr_Red[positions(x+i,this.widith)][positions(y+j,this.height)];
+		gx_Blue+=(int)matri_x[i+1][j+1]*(int)this.Pixmatr_Blue[positions(x+i,this.widith)][positions(y+j,this.height)];	
+		gy_Blue+=(int)matri_y[i+1][j+1]*(int)this.Pixmatr_Blue[positions(x+i,this.widith)][positions(y+j,this.height)];
+		gx_Green+=(int)matri_x[i+1][j+1]*(int)this.Pixmatr_Green[positions(x+i,this.widith)][positions(y+j,this.height)];	
+		gy_Green+=(int)matri_y[i+1][j+1]*(int)this.Pixmatr_Green[positions(x+i,this.widith)][positions(y+j,this.height)];	
+		}
+	}
+	
 	  energy+=Math.pow(gx_Blue,2)+Math.pow(gx_Green, 2)+Math.pow(gx_Red,2)+Math.pow(gy_Blue,2)+Math.pow(gy_Green,2)+Math.pow(gy_Red,2);
 	  d.energy[x][y]=energy;
 	  return d;
   }
   
-  
+  public int positions(int x,int y) {
+	 int a =0;
+	  if(x<0){
+		 return a;
+	 }
+	  if (x==y){
+	  return y-1;
+	  }
+	  
+	  else return x;
+  }
 
   /**
    * TEST CODE:  YOU DO NOT NEED TO FILL IN ANY METHODS BELOW THIS POINT.
