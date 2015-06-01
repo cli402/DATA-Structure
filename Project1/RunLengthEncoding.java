@@ -29,6 +29,9 @@ public class RunLengthEncoding implements Iterable {
    *  Define any variables associated with a RunLengthEncoding object here.
    *  These variables MUST be private.
    */
+private int height;
+private int widith;
+private Dlist list;
 
 
 
@@ -48,6 +51,9 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height) {
     // Your solution here.
+	  this.widith=width;
+	  this.height=height;
+	  this.list=new Dlist();
   }
 
   /**
@@ -74,8 +80,15 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(int width, int height, int[] red, int[] green,
                            int[] blue, int[] runLengths) {
     // Your solution here.
-  }
-
+	  this.height=height;
+	  this.widith=width;
+	  //go through all the element in the array
+	  for (int i=0;i<red.length;i++){
+			  list.insertEnd(runLengths[i], red[i], green[i], blue[i]);
+		  }
+	  }
+	  
+  
   /**
    *  getWidth() returns the width of the image that this run-length encoding
    *  represents.
@@ -85,7 +98,7 @@ public class RunLengthEncoding implements Iterable {
 
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return this.widith;
   }
 
   /**
@@ -96,7 +109,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return this.height;
   }
 
   /**
@@ -108,7 +121,8 @@ public class RunLengthEncoding implements Iterable {
    */
   public RunIterator iterator() {
     // Replace the following line with your solution.
-    return null;
+	  RunIterator ite=new RunIterator(list.head.next);
+	  return ite;
     // You'll want to construct a new RunIterator, but first you'll need to
     // write a constructor in the RunIterator class.
   }
@@ -121,7 +135,21 @@ public class RunLengthEncoding implements Iterable {
    */
   public PixImage toPixImage() {
     // Replace the following line with your solution.
-    return new PixImage(1, 1);
+	  PixImage pic=new PixImage(this.widith,this.height);
+	  int counter=0;
+	  RunIterator ite=iterator();
+	  int[] array=ite.next();
+    for (int i=0;i<this.height;i++){
+    	for (int j=0;j<this.widith;j++){
+    		if(counter==array[0]){
+    			array=ite.next();
+    			counter=0;
+    		}
+    		pic.setPixel(i, j, (short)array[1], (short)array[2], (short)array[3]);
+    		counter+=1;
+    		}
+    }
+	  return pic;
   }
 
   /**
@@ -155,6 +183,31 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(PixImage image) {
     // Your solution here, but you should probably leave the following line
     // at the end.
+	  this.widith=image.getWidth();
+	  this.height=image.getHeight();
+	  list=new Dlist();
+	  int[] array=new int[] {0,image.getRed(0, 0),
+	  						image.getGreen(0, 0),
+	  						image.getBlue(0, 0)};
+	  for(int i=0;i<this.height;i++){
+		  for(int j=0;j<this.widith;j++){
+		  if(image.getRed(j, i)==array[1]&&
+				  image.getGreen(j, i)==array[2]&&
+			  image.getBlue(j, i)==array[3]){
+			  array[0]+=1;
+		  }
+		  else{
+			  list.insertEnd(array[0], array[1], array[2], array[3]);
+			  array[0]=1;
+			array[1]=image.getRed(j, i);
+			array[2]=image.getGreen(j, i);
+			array[3]=image.getBlue(j, i);
+		  }
+	  }		  
+		  
+	  }  
+	  list.insertEnd(array[0], array[1], array[2], array[3]);
+
     check();
   }
 
@@ -165,6 +218,22 @@ public class RunLengthEncoding implements Iterable {
    */
   public void check() {
     // Your solution here.
+	  DlinkNode erro= list.head.next;
+	  int cout=0;
+	  
+	  //check the two neighbor nodes are different
+	  while(erro!=list.head.prev){
+		  cout+=erro.count;
+		  if(erro.blue==erro.next.blue&&
+			erro.red==erro.next.red&&
+			erro.green==erro.next.green){
+			  System.out.print("The two got the same RGB");
+		  }
+	  }
+	  cout+=erro.next.count;
+	  if(cout!=this.height*this.widith){
+		  System.out.print("The total length of the encodeing is not right \n");
+	  }
   }
 
 
