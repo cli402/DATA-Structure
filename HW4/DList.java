@@ -51,6 +51,8 @@ public class DList {
    *  DList() constructor for an empty DList.
    */
   public DList() {
+	  this.size=0;
+	  this.head=newNode(null,head,head); 
     //  Your solution here.
   }
 
@@ -79,6 +81,14 @@ public class DList {
    */
   public void insertFront(Object item) {
     // Your solution here.
+	  if(isEmpty()){
+		  head.next=newNode(item,head,head);
+		  head.prev=head.next;
+	  }
+	  else{
+		  head.next=newNode(item,head,head.next);
+		  head.next.next.prev=head.next;
+	  }size++;
   }
 
   /**
@@ -88,6 +98,14 @@ public class DList {
    */
   public void insertBack(Object item) {
     // Your solution here.
+	  if(isEmpty()){
+		  head.next=newNode(item,head,head);
+		  head.prev=head.next;
+	  }
+	  else{
+		  head.prev=newNode(item,head.prev,head);
+		  head.prev.prev.next=head.prev;
+	  }size++;
   }
 
   /**
@@ -101,6 +119,12 @@ public class DList {
    */
   public DListNode front() {
     // Your solution here.
+	  if(isEmpty()){
+		  return null;
+	  }
+	  else{
+		  return this.head.next;
+	  }
   }
 
   /**
@@ -113,6 +137,12 @@ public class DList {
    *  Performance:  runs in O(1) time.
    */
   public DListNode back() {
+	  if(isEmpty()){
+		  return null;
+	  }
+	  else{
+		  return this.head.prev;
+	  }
     // Your solution here.
   }
 
@@ -128,6 +158,12 @@ public class DList {
    */
   public DListNode next(DListNode node) {
     // Your solution here.
+	  if(node==null || node.next==head){
+		  return null;
+	  }
+	  else{
+		  return node.next;
+	  }
   }
 
   /**
@@ -142,6 +178,12 @@ public class DList {
    */
   public DListNode prev(DListNode node) {
     // Your solution here.
+	  if (node==null || node.prev==head){
+		  return null;
+	  }
+	  else{
+		  return node.prev;
+	  }
   }
 
   /**
@@ -153,6 +195,10 @@ public class DList {
    */
   public void insertAfter(Object item, DListNode node) {
     // Your solution here.
+	  if(node==null)return;
+	  node.next=newNode(item,node,node.next);
+	  node.next.next.prev=node.next;
+	  size++;
   }
 
   /**
@@ -164,6 +210,10 @@ public class DList {
    */
   public void insertBefore(Object item, DListNode node) {
     // Your solution here.
+	  if(node==null)return;
+	  node.prev=newNode(item,node.prev,node);
+	  node.prev.prev.next=node.prev;
+	  size++;
   }
 
   /**
@@ -172,6 +222,10 @@ public class DList {
    */
   public void remove(DListNode node) {
     // Your solution here.
+	  if(node==null)return;
+	  node.prev.next=node.next;
+	  node.next.prev=node.prev;
+	  size++;
   }
 
   /**
@@ -191,4 +245,13 @@ public class DList {
     }
     return result + "]";
   }
+
+
+
+public static void main(String[] args){
+	DList list=new DList();
+	list.insertBack(3);
+	System.out.print(list.size);
+	
+}
 }
