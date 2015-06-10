@@ -66,7 +66,18 @@ public class SimpleBoard {
     // Replace the following line with your solution.  Be sure to return false
     //   (rather than throwing a ClassCastException) if "board" is not
     //   a SimpleBoard.
-    return false;
+	SimpleBoard ope=(SimpleBoard) board;
+    if (ope==null){
+    return false;}
+    else {
+    	for(int i =0;i<this.DIMENSION;i++){
+    		for (int j =0;j<this.DIMENSION;j++){
+    			if(ope.elementAt(i,j)!=this.elementAt(i, j)){
+    				return false;
+    			}
+    		}
+    	}return true;
+    }
   }
 
   /**
@@ -76,7 +87,12 @@ public class SimpleBoard {
 
   public int hashCode() {
     // Replace the following line with your solution.
-    return 99;
+	 int hashcode=0;
+	  for(int i =0;i<this.DIMENSION;i++){
+  		for (int j =0;j<this.DIMENSION;j++){
+	  hashcode+= this.elementAt(i, j)*(int)Math.pow(3,i*DIMENSION+j);
+  		}}
+	  return hashcode;
   }
 
 }
