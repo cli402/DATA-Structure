@@ -1,6 +1,7 @@
 /* HashTableChained.java */
 
 package dict;
+import list.*;
 
 /**
  *  HashTableChained implements a Dictionary as a hash table with chaining.
@@ -19,8 +20,9 @@ public class HashTableChained implements Dictionary {
   /**
    *  Place any data fields here.
    **/
-
-
+protected List[] hashtable;
+protected int size;
+protected int cap;
 
   /** 
    *  Construct a new empty hash table intended to hold roughly sizeEstimate
@@ -30,6 +32,9 @@ public class HashTableChained implements Dictionary {
 
   public HashTableChained(int sizeEstimate) {
     // Your solution here.
+	  cap = prime(sizeEstimate);
+	  hashtable=new DList[cap];
+	  size=0;
   }
 
   /** 
@@ -39,6 +44,9 @@ public class HashTableChained implements Dictionary {
 
   public HashTableChained() {
     // Your solution here.
+	  cap=prime(150);
+	  hashtable=new DList[cap];
+	  size=0;
   }
 
   /**
@@ -51,7 +59,7 @@ public class HashTableChained implements Dictionary {
 
   int compFunction(int code) {
     // Replace the following line with your solution.
-    return 88;
+    return ((127*code + 9) % 16908799) % (cap);
   }
 
   /** 
@@ -63,7 +71,7 @@ public class HashTableChained implements Dictionary {
 
   public int size() {
     // Replace the following line with your solution.
-    return 0;
+    return size;
   }
 
   /** 
@@ -74,7 +82,10 @@ public class HashTableChained implements Dictionary {
 
   public boolean isEmpty() {
     // Replace the following line with your solution.
-    return true;
+    if(size==0)
+	  return true;
+    else 
+    	return false;
   }
 
   /**
@@ -92,7 +103,17 @@ public class HashTableChained implements Dictionary {
 
   public Entry insert(Object key, Object value) {
     // Replace the following line with your solution.
-    return null;
+    Entry ins=new Entry();
+    ins.key=key;
+    ins.value=value;
+    int n=Math.abs(compFunction(key.hashCode()));
+    if(hashtable[n]==null){
+    	hashtable[n]=new DList();
+    }
+    //insert the Entry object into the Dlist
+    hashtable[n].insertBack(ins);
+    size++;
+	 return ins;
   }
 
   /** 
@@ -109,6 +130,19 @@ public class HashTableChained implements Dictionary {
 
   public Entry find(Object key) {
     // Replace the following line with your solution.
+    int n = Math.abs(compFunction(key.hashCode()));
+    try{
+    	DListNode current=(DListNode) hashtable[n].front();
+    	for(int i =0;i<hashtable[n].length();i++){
+    		if(((Entry) current.item()).key.equals(key)){
+    			return ((Entry) current.item());
+    		}
+    	
+    		current=(DListNode)current.next();
+    	}
+    }catch(InvalidNodeException ivn){
+    	System.out.print(ivn);
+    }
     return null;
   }
 
@@ -127,14 +161,57 @@ public class HashTableChained implements Dictionary {
 
   public Entry remove(Object key) {
     // Replace the following line with your solution.
-    return null;
+	 int n = Math.abs(compFunction(key.hashCode()));
+	 try{
+	    	DListNode current=(DListNode) hashtable[n].front();
+	    	for(int i =0;i<hashtable[n].length();i++){
+	    		if(((Entry) current.item()).key.equals(key)){
+	    			current.remove();
+	    			size--;
+	    			return ((Entry) current.item());
+	    		}
+	    	
+	    		current=(DListNode)current.next();
+	    	}
+	    }catch(InvalidNodeException ivn){
+	    	System.out.print(ivn);
+	    }
+	    return null;
   }
 
   /**
    *  Remove all entries from the dictionary.
    */
   public void makeEmpty() {
-    // Your solution here.
+    size=0;
+    hashtable=new DList[cap];
   }
 
+
+public int prime(int n ){
+	int[] arry=new int[n];
+	for(int i =2;i<n;i++){
+		if(isPrime(i)){
+			arry[i]=1;
+		}
+	}
+	//get the prime number that is closet to the n
+	for(int i=n;i>0;i--){
+		if (arry[i]==1){
+			return i;
+		}
+	}
+	return 0;
+}
+
+boolean isPrime(int n) {
+    //check if n is a multiple of 2
+    if (n%2==0) return false;
+    //if not, then just check the odds
+    for(int i=3;i*i<=n;i+=2) {
+        if(n%i==0)
+            return false;
+    }
+    return true;
+}
 }
