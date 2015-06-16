@@ -101,10 +101,109 @@ public class Tree234 extends IntDictionary {
    *  @param key is the key sought.
    **/
   public void insert(int key) {
-    // Fill in your solution here.
+	  if(root==null){
+		 root=new Tree234Node(null,key);
+		 return;
+	  }
+	  Tree234Node node =root;
+	  if (node.keys==3){
+		  node=split(node);
+	  }
+	  while (node.child1!= null) {
+		
+	      if (key <= node.key1) {
+	        node = node.child1;
+	      } 
+	       else if ((node.keys == 1) || (key <= node.key2)) {
+	        node = node.child2;
+	      }
+	       else if ((node.keys == 2) || (key <= node.key3)) {
+	        node = node.child3;
+	      }
+	       else {
+	        node = node.child4;
+	      }
+	      if (node.keys==3){
+			  node=split(node);
+		  }
+	  }
+	  node.insert(key);
   }
-
-
+  
+  //split the 234 treenode 
+  public Tree234Node split(Tree234Node node){ 
+	 //sanity check
+	  if(node.keys!=3){
+		  System.out.print("The node is not eligible for spliting");
+		  return null;
+	  }
+	  node=upper(node);
+	  return node;
+  }
+  
+  public Tree234Node upper(Tree234Node p){
+		//if the node is the root,create a new root node
+		  if(p==root){
+			  root=new Tree234Node(null,p.key2);
+			  p.parent=root;
+		  }
+		  //if not the root, just insert the node into the parent
+		  else{
+			  p.parent.insert(p.key2);
+		  }
+		  
+		  Tree234Node split1=new Tree234Node(p.parent,p.key1);
+		  Tree234Node split2=new Tree234Node(p.parent,p.key3);
+		  //get the p's child point back to the split node 
+		  if(p.parent.keys==1){
+			  p.parent.child1=split1;
+			  p.parent.child2=split2;
+		  }
+		  else if (p.parent.keys==2){
+			  if(p.parent.child2==p){
+				  p.parent.child2=split1;
+				  p.parent.child3=split2;
+			  }
+			  else if (p.parent.child1==p){
+				  p.parent.child3=p.parent.child2;
+				  p.parent.child1=split1;
+				  p.parent.child2=split2;
+			  }
+		  }//keys==3
+		  else{
+			  if(p.parent.child1==p){
+				  p.parent.child4=p.parent.child3;
+				  p.parent.child3=p.parent.child2;
+				  p.parent.child2=split2;
+				  p.parent.child1=split1;
+			  }
+			  else if (p.parent.child2==p){
+				  p.parent.child4=p.parent.child3;
+				  p.parent.child2=split1;
+				  p.parent.child3=split2;
+			  }
+			  else if(p.parent.child3==p){
+				  p.parent.child3=split1;
+				  p.parent.child4=split2;
+			  }
+		  }
+		  
+		  //check if p is internal node
+		  if(p.child1!=null){
+			  split1.child1=p.child1;
+			  split1.child2=p.child2;
+			  split2.child1=p.child3;
+			  split2.child2=p.child4;
+			  p.child1.parent=split1;
+			  p.child2.parent=split1;
+			  p.child3.parent=split2;
+			  p.child4.parent=split2;
+		  }
+		  return p.parent;
+	  }
+  
+  
+  
   /**
    *  testHelper() prints the String representation of this tree, then
    *  compares it with the expected String, and prints an error message if
